@@ -4,7 +4,7 @@ import type { LucideIcon } from "lucide-react";
 
 export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean };
 
-export function PanelLayout({ title, nav, children, testId, footer }: { title: string; nav: NavItem[]; children: ReactNode; testId: string; footer?: ReactNode }) {
+export function PanelLayout({ title, nav, children, testId }: { title: string; nav: NavItem[]; children: ReactNode; testId: string }) {
   return (
     <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 lg:grid-cols-[220px_1fr]" data-testid={testId}>
       <aside className="space-y-3">
@@ -23,7 +23,6 @@ export function PanelLayout({ title, nav, children, testId, footer }: { title: s
             </Link>
           ))}
         </nav>
-        {footer}
       </aside>
       <section className="min-w-0 space-y-6">{children}</section>
     </div>
@@ -50,5 +49,3 @@ export function PageTitle({ children, action }: { children: ReactNode; action?: 
 }
 
 export const selectCls = "h-9 rounded-md border bg-background px-2 text-sm";
-export const fmtDate = (d: Date | string | null) => (d ? new Date(d).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) : "—");
-export const providerLabel: Record<"stripe" | "paypal" | "razorpay" | "crypto", string> = { stripe: "Card (Stripe)", paypal: "PayPal", razorpay: "Razorpay", crypto: "Crypto" };

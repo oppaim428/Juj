@@ -2,33 +2,27 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Package } from "lucide-react";
 import { fetchMyOrders } from "@/lib/orders.functions";
-import { formatPrice } from "@/lib/money";
+import { fmtDate, formatPrice } from "@/lib/money";
 import { StatusBadge } from "@/components/site/StatusBadge";
-import { fmtDate } from "@/components/site/PanelLayout";
+import { useI18n } from "@/i18n";
 
 export const Route = createFileRoute("/_authenticated/orders/")({
-  head: () => ({
-    meta: [
-      { title: "My orders — JUJ" },
-      { name: "description", content: "Your JUJ orders." },
-      { property: "og:title", content: "My orders — JUJ" },
-      { property: "og:description", content: "Your JUJ orders." },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "My orders — JUJ" }, { name: "description", content: "Your JUJ orders." }] }),
   component: Page,
 });
 
 function Page() {
+  const { t, locale } = useI18n();
   const q = useQuery({ queryKey: ["my-orders"], queryFn: () => fetchMyOrders() });
   return (
-    <div className="mx-auto max-w-7xl space-y-5 px-4 py-6">
-      <h1 className="text-3xl font-bold">My orders</h1>
+    <div className="mx-auto max-w-4xl space-y-5 px-4 py-6">
+      <h1 className="text-3xl font-bold">{t("My orders")}</h1>
       {q.isPending ? (
-        <p className="py-16 text-center text-muted-foreground">Loading…</p>
+        <p className="py-16 text-center text-muted-foreground">{t("Loading…")}</p>
       ) : !q.data?.length ? (
         <div className="py-16 text-center text-muted-foreground" data-testid="orders-empty">
           <Package className="mx-auto mb-3 h-10 w-10" />
-          No orders yet.
+          {t("No orders yet.")}
         </div>
       ) : (
         <ul className="divide-y rounded-xl border bg-card" data-testid="orders-list">
@@ -40,7 +34,7 @@ function Page() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{o.offer_title}{o.option_label ? ` — ${o.option_label}` : ""}</p>
-                  <p className="text-xs text-muted-foreground">#{o.id} · {fmtDate(o.created_at)} · ×{o.quantity}</p>
+                  <p className="text-xs text-muted-foreground">#{o.id} · {fmtDate(o.created_at, locale)} · ×{o.quantity}</p>
                 </div>
                 <div className="text-end">
                   <p className="font-display font-bold">{formatPrice(o.total_minor, o.currency)}</p>

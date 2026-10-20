@@ -11,7 +11,7 @@ export function GlowPicker() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem("juj-glow");
-      const selected = colors.find((value) => value === saved) ?? "green";
+      const selected = colors.find((value) => value === saved) ?? colors.find((value) => value === document.documentElement.dataset["glow"]) ?? "green";
       setColor(selected);
       document.documentElement.dataset["glow"] = selected;
     } catch { /* Storage may be unavailable. Keep the default. */ }

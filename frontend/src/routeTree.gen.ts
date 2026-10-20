@@ -11,36 +11,35 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SellRouteImport } from './routes/sell'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedCabinetRouteRouteImport } from './routes/_authenticated/cabinet/route'
 import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated/favorites'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as ApiUploadsRouteImport } from './routes/api/uploads'
 import { Route as CatalogCategorySlugRouteImport } from './routes/catalog.$categorySlug'
+import { Route as PagesSlugRouteImport } from './routes/pages.$slug'
 import { Route as SellerIdRouteImport } from './routes/seller.$id'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminSectionRouteImport } from './routes/_authenticated/admin/$section'
+import { Route as AuthenticatedCabinetIndexRouteImport } from './routes/_authenticated/cabinet/index'
+import { Route as AuthenticatedCabinetOrdersRouteImport } from './routes/_authenticated/cabinet/orders'
+import { Route as AuthenticatedCabinetPayoutsRouteImport } from './routes/_authenticated/cabinet/payouts'
+import { Route as AuthenticatedCabinetReviewsRouteImport } from './routes/_authenticated/cabinet/reviews'
 import { Route as AuthenticatedCheckoutReturnRouteImport } from './routes/_authenticated/checkout.return'
 import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
-import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
-import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
+import { Route as ApiFilesSplatRouteImport } from './routes/api/files/$'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe/webhook'
-import { Route as ApiV1CategoriesRouteImport } from './routes/api/v1/categories'
-import { Route as ApiV1FavoritesRouteImport } from './routes/api/v1/favorites'
-import { Route as ApiV1OffersRouteImport } from './routes/api/v1/offers'
-import { Route as ApiV1SearchRouteImport } from './routes/api/v1/search'
 import { Route as CatalogProductOfferRouteImport } from './routes/catalog.product.$offer'
+import { Route as AuthenticatedCabinetOffersIndexRouteImport } from './routes/_authenticated/cabinet/offers.index'
+import { Route as AuthenticatedCabinetOffersIdRouteImport } from './routes/_authenticated/cabinet/offers.$id'
 import { Route as ApiPaymentsCryptoIpnRouteImport } from './routes/api/payments/crypto/ipn'
-import { Route as ApiV1AuthLoginRouteImport } from './routes/api/v1/auth.login'
-import { Route as ApiV1AuthMeRouteImport } from './routes/api/v1/auth.me'
-import { Route as ApiV1FavoritesOfferIdRouteImport } from './routes/api/v1/favorites.$offerId'
-import { Route as ApiV1OffersIdRouteImport } from './routes/api/v1/offers.$id'
-import { Route as ApiV1SellersIdRouteImport } from './routes/api/v1/sellers.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,14 +50,14 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -81,34 +80,40 @@ const SellRoute = SellRouteImport.update({
   path: '/sell',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCabinetRouteRoute =
+  AuthenticatedCabinetRouteRouteImport.update({
+    id: '/cabinet',
+    path: '/cabinet',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFavoritesRoute = AuthenticatedFavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
-  id: '/payments',
-  path: '/payments',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
+const ApiUploadsRoute = ApiUploadsRouteImport.update({
+  id: '/api/uploads',
+  path: '/api/uploads',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogCategorySlugRoute = CatalogCategorySlugRouteImport.update({
   id: '/catalog/$categorySlug',
   path: '/catalog/$categorySlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagesSlugRoute = PagesSlugRouteImport.update({
+  id: '/pages/$slug',
+  path: '/pages/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SellerIdRoute = SellerIdRouteImport.update({
@@ -116,6 +121,41 @@ const SellerIdRoute = SellerIdRouteImport.update({
   path: '/seller/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
+const AuthenticatedAdminSectionRoute =
+  AuthenticatedAdminSectionRouteImport.update({
+    id: '/$section',
+    path: '/$section',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedCabinetIndexRoute =
+  AuthenticatedCabinetIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCabinetRouteRoute,
+  } as any)
+const AuthenticatedCabinetOrdersRoute =
+  AuthenticatedCabinetOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedCabinetRouteRoute,
+  } as any)
+const AuthenticatedCabinetPayoutsRoute =
+  AuthenticatedCabinetPayoutsRouteImport.update({
+    id: '/payouts',
+    path: '/payouts',
+    getParentRoute: () => AuthenticatedCabinetRouteRoute,
+  } as any)
+const AuthenticatedCabinetReviewsRoute =
+  AuthenticatedCabinetReviewsRouteImport.update({
+    id: '/reviews',
+    path: '/reviews',
+    getParentRoute: () => AuthenticatedCabinetRouteRoute,
+  } as any)
 const AuthenticatedCheckoutReturnRoute =
   AuthenticatedCheckoutReturnRouteImport.update({
     id: '/checkout/return',
@@ -133,39 +173,14 @@ const AuthenticatedOrdersIdRoute = AuthenticatedOrdersIdRouteImport.update({
   path: '/orders/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
-  id: '/orders/',
-  path: '/orders/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
-  id: '/orders/$id',
-  path: '/orders/$id',
-  getParentRoute: () => AdminRoute,
+const ApiFilesSplatRoute = ApiFilesSplatRouteImport.update({
+  id: '/api/files/$',
+  path: '/api/files/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   id: '/api/stripe/webhook',
   path: '/api/stripe/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1CategoriesRoute = ApiV1CategoriesRouteImport.update({
-  id: '/api/v1/categories',
-  path: '/api/v1/categories',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1FavoritesRoute = ApiV1FavoritesRouteImport.update({
-  id: '/api/v1/favorites',
-  path: '/api/v1/favorites',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1OffersRoute = ApiV1OffersRouteImport.update({
-  id: '/api/v1/offers',
-  path: '/api/v1/offers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1SearchRoute = ApiV1SearchRouteImport.update({
-  id: '/api/v1/search',
-  path: '/api/v1/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogProductOfferRoute = CatalogProductOfferRouteImport.update({
@@ -173,260 +188,236 @@ const CatalogProductOfferRoute = CatalogProductOfferRouteImport.update({
   path: '/catalog/product/$offer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCabinetOffersIndexRoute =
+  AuthenticatedCabinetOffersIndexRouteImport.update({
+    id: '/offers/',
+    path: '/offers/',
+    getParentRoute: () => AuthenticatedCabinetRouteRoute,
+  } as any)
+const AuthenticatedCabinetOffersIdRoute =
+  AuthenticatedCabinetOffersIdRouteImport.update({
+    id: '/offers/$id',
+    path: '/offers/$id',
+    getParentRoute: () => AuthenticatedCabinetRouteRoute,
+  } as any)
 const ApiPaymentsCryptoIpnRoute = ApiPaymentsCryptoIpnRouteImport.update({
   id: '/api/payments/crypto/ipn',
   path: '/api/payments/crypto/ipn',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiV1AuthLoginRoute = ApiV1AuthLoginRouteImport.update({
-  id: '/api/v1/auth/login',
-  path: '/api/v1/auth/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1AuthMeRoute = ApiV1AuthMeRouteImport.update({
-  id: '/api/v1/auth/me',
-  path: '/api/v1/auth/me',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiV1FavoritesOfferIdRoute = ApiV1FavoritesOfferIdRouteImport.update({
-  id: '/$offerId',
-  path: '/$offerId',
-  getParentRoute: () => ApiV1FavoritesRoute,
-} as any)
-const ApiV1OffersIdRoute = ApiV1OffersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiV1OffersRoute,
-} as any)
-const ApiV1SellersIdRoute = ApiV1SellersIdRouteImport.update({
-  id: '/api/v1/sellers/$id',
-  path: '/api/v1/sellers/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/cabinet': typeof AuthenticatedCabinetRouteRouteWithChildren
   '/favorites': typeof AuthenticatedFavoritesRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/payments': typeof AdminPaymentsRoute
-  '/admin/settings': typeof AdminSettingsRoute
+  '/api/uploads': typeof ApiUploadsRoute
   '/catalog/$categorySlug': typeof CatalogCategorySlugRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/seller/$id': typeof SellerIdRoute
-  '/admin/': typeof AdminIndexRoute
+  '/admin/$section': typeof AuthenticatedAdminSectionRoute
+  '/cabinet/orders': typeof AuthenticatedCabinetOrdersRoute
+  '/cabinet/payouts': typeof AuthenticatedCabinetPayoutsRoute
+  '/cabinet/reviews': typeof AuthenticatedCabinetReviewsRoute
   '/checkout/return': typeof AuthenticatedCheckoutReturnRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/api/files/$': typeof ApiFilesSplatRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
-  '/api/v1/categories': typeof ApiV1CategoriesRoute
-  '/api/v1/favorites': typeof ApiV1FavoritesRouteWithChildren
-  '/api/v1/offers': typeof ApiV1OffersRouteWithChildren
-  '/api/v1/search': typeof ApiV1SearchRoute
   '/catalog/product/$offer': typeof CatalogProductOfferRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/cabinet/': typeof AuthenticatedCabinetIndexRoute
   '/orders/': typeof AuthenticatedOrdersIndexRoute
-  '/admin/orders/': typeof AdminOrdersIndexRoute
+  '/cabinet/offers/$id': typeof AuthenticatedCabinetOffersIdRoute
   '/api/payments/crypto/ipn': typeof ApiPaymentsCryptoIpnRoute
-  '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
-  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
-  '/api/v1/favorites/$offerId': typeof ApiV1FavoritesOfferIdRoute
-  '/api/v1/offers/$id': typeof ApiV1OffersIdRoute
-  '/api/v1/sellers/$id': typeof ApiV1SellersIdRoute
+  '/cabinet/offers/': typeof AuthenticatedCabinetOffersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/favorites': typeof AuthenticatedFavoritesRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/payments': typeof AdminPaymentsRoute
-  '/admin/settings': typeof AdminSettingsRoute
+  '/api/uploads': typeof ApiUploadsRoute
   '/catalog/$categorySlug': typeof CatalogCategorySlugRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/seller/$id': typeof SellerIdRoute
-  '/admin': typeof AdminIndexRoute
+  '/admin/$section': typeof AuthenticatedAdminSectionRoute
+  '/cabinet/orders': typeof AuthenticatedCabinetOrdersRoute
+  '/cabinet/payouts': typeof AuthenticatedCabinetPayoutsRoute
+  '/cabinet/reviews': typeof AuthenticatedCabinetReviewsRoute
   '/checkout/return': typeof AuthenticatedCheckoutReturnRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/api/files/$': typeof ApiFilesSplatRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
-  '/api/v1/categories': typeof ApiV1CategoriesRoute
-  '/api/v1/favorites': typeof ApiV1FavoritesRouteWithChildren
-  '/api/v1/offers': typeof ApiV1OffersRouteWithChildren
-  '/api/v1/search': typeof ApiV1SearchRoute
   '/catalog/product/$offer': typeof CatalogProductOfferRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/cabinet': typeof AuthenticatedCabinetIndexRoute
   '/orders': typeof AuthenticatedOrdersIndexRoute
-  '/admin/orders': typeof AdminOrdersIndexRoute
+  '/cabinet/offers/$id': typeof AuthenticatedCabinetOffersIdRoute
   '/api/payments/crypto/ipn': typeof ApiPaymentsCryptoIpnRoute
-  '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
-  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
-  '/api/v1/favorites/$offerId': typeof ApiV1FavoritesOfferIdRoute
-  '/api/v1/offers/$id': typeof ApiV1OffersIdRoute
-  '/api/v1/sellers/$id': typeof ApiV1SellersIdRoute
+  '/cabinet/offers': typeof AuthenticatedCabinetOffersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/sell': typeof SellRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/cabinet': typeof AuthenticatedCabinetRouteRouteWithChildren
   '/_authenticated/favorites': typeof AuthenticatedFavoritesRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/payments': typeof AdminPaymentsRoute
-  '/admin/settings': typeof AdminSettingsRoute
+  '/api/uploads': typeof ApiUploadsRoute
   '/catalog/$categorySlug': typeof CatalogCategorySlugRoute
+  '/pages/$slug': typeof PagesSlugRoute
   '/seller/$id': typeof SellerIdRoute
-  '/admin/': typeof AdminIndexRoute
+  '/_authenticated/admin/$section': typeof AuthenticatedAdminSectionRoute
+  '/_authenticated/cabinet/orders': typeof AuthenticatedCabinetOrdersRoute
+  '/_authenticated/cabinet/payouts': typeof AuthenticatedCabinetPayoutsRoute
+  '/_authenticated/cabinet/reviews': typeof AuthenticatedCabinetReviewsRoute
   '/_authenticated/checkout/return': typeof AuthenticatedCheckoutReturnRoute
   '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/admin/orders/$id': typeof AdminOrdersIdRoute
+  '/api/files/$': typeof ApiFilesSplatRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
-  '/api/v1/categories': typeof ApiV1CategoriesRoute
-  '/api/v1/favorites': typeof ApiV1FavoritesRouteWithChildren
-  '/api/v1/offers': typeof ApiV1OffersRouteWithChildren
-  '/api/v1/search': typeof ApiV1SearchRoute
   '/catalog/product/$offer': typeof CatalogProductOfferRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/cabinet/': typeof AuthenticatedCabinetIndexRoute
   '/_authenticated/orders/': typeof AuthenticatedOrdersIndexRoute
-  '/admin/orders/': typeof AdminOrdersIndexRoute
+  '/_authenticated/cabinet/offers/$id': typeof AuthenticatedCabinetOffersIdRoute
   '/api/payments/crypto/ipn': typeof ApiPaymentsCryptoIpnRoute
-  '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
-  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
-  '/api/v1/favorites/$offerId': typeof ApiV1FavoritesOfferIdRoute
-  '/api/v1/offers/$id': typeof ApiV1OffersIdRoute
-  '/api/v1/sellers/$id': typeof ApiV1SellersIdRoute
+  '/_authenticated/cabinet/offers/': typeof AuthenticatedCabinetOffersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auth'
+    | '/contact'
     | '/forgot-password'
     | '/reset-password'
     | '/search'
     | '/sell'
+    | '/verify-email'
+    | '/admin'
+    | '/cabinet'
     | '/favorites'
-    | '/admin/login'
-    | '/admin/payments'
-    | '/admin/settings'
+    | '/api/uploads'
     | '/catalog/$categorySlug'
+    | '/pages/$slug'
     | '/seller/$id'
-    | '/admin/'
+    | '/admin/$section'
+    | '/cabinet/orders'
+    | '/cabinet/payouts'
+    | '/cabinet/reviews'
     | '/checkout/return'
     | '/orders/$id'
-    | '/admin/orders/$id'
+    | '/api/files/$'
     | '/api/stripe/webhook'
-    | '/api/v1/categories'
-    | '/api/v1/favorites'
-    | '/api/v1/offers'
-    | '/api/v1/search'
     | '/catalog/product/$offer'
+    | '/admin/'
+    | '/cabinet/'
     | '/orders/'
-    | '/admin/orders/'
+    | '/cabinet/offers/$id'
     | '/api/payments/crypto/ipn'
-    | '/api/v1/auth/login'
-    | '/api/v1/auth/me'
-    | '/api/v1/favorites/$offerId'
-    | '/api/v1/offers/$id'
-    | '/api/v1/sellers/$id'
+    | '/cabinet/offers/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/contact'
     | '/forgot-password'
     | '/reset-password'
     | '/search'
     | '/sell'
+    | '/verify-email'
     | '/favorites'
-    | '/admin/login'
-    | '/admin/payments'
-    | '/admin/settings'
+    | '/api/uploads'
     | '/catalog/$categorySlug'
+    | '/pages/$slug'
     | '/seller/$id'
-    | '/admin'
+    | '/admin/$section'
+    | '/cabinet/orders'
+    | '/cabinet/payouts'
+    | '/cabinet/reviews'
     | '/checkout/return'
     | '/orders/$id'
-    | '/admin/orders/$id'
+    | '/api/files/$'
     | '/api/stripe/webhook'
-    | '/api/v1/categories'
-    | '/api/v1/favorites'
-    | '/api/v1/offers'
-    | '/api/v1/search'
     | '/catalog/product/$offer'
+    | '/admin'
+    | '/cabinet'
     | '/orders'
-    | '/admin/orders'
+    | '/cabinet/offers/$id'
     | '/api/payments/crypto/ipn'
-    | '/api/v1/auth/login'
-    | '/api/v1/auth/me'
-    | '/api/v1/favorites/$offerId'
-    | '/api/v1/offers/$id'
-    | '/api/v1/sellers/$id'
+    | '/cabinet/offers'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/admin'
     | '/auth'
+    | '/contact'
     | '/forgot-password'
     | '/reset-password'
     | '/search'
     | '/sell'
+    | '/verify-email'
+    | '/_authenticated/admin'
+    | '/_authenticated/cabinet'
     | '/_authenticated/favorites'
-    | '/admin/login'
-    | '/admin/payments'
-    | '/admin/settings'
+    | '/api/uploads'
     | '/catalog/$categorySlug'
+    | '/pages/$slug'
     | '/seller/$id'
-    | '/admin/'
+    | '/_authenticated/admin/$section'
+    | '/_authenticated/cabinet/orders'
+    | '/_authenticated/cabinet/payouts'
+    | '/_authenticated/cabinet/reviews'
     | '/_authenticated/checkout/return'
     | '/_authenticated/orders/$id'
-    | '/admin/orders/$id'
+    | '/api/files/$'
     | '/api/stripe/webhook'
-    | '/api/v1/categories'
-    | '/api/v1/favorites'
-    | '/api/v1/offers'
-    | '/api/v1/search'
     | '/catalog/product/$offer'
+    | '/_authenticated/admin/'
+    | '/_authenticated/cabinet/'
     | '/_authenticated/orders/'
-    | '/admin/orders/'
+    | '/_authenticated/cabinet/offers/$id'
     | '/api/payments/crypto/ipn'
-    | '/api/v1/auth/login'
-    | '/api/v1/auth/me'
-    | '/api/v1/favorites/$offerId'
-    | '/api/v1/offers/$id'
-    | '/api/v1/sellers/$id'
+    | '/_authenticated/cabinet/offers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ContactRoute: typeof ContactRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SearchRoute: typeof SearchRoute
   SellRoute: typeof SellRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
+  ApiUploadsRoute: typeof ApiUploadsRoute
   CatalogCategorySlugRoute: typeof CatalogCategorySlugRoute
+  PagesSlugRoute: typeof PagesSlugRoute
   SellerIdRoute: typeof SellerIdRoute
+  ApiFilesSplatRoute: typeof ApiFilesSplatRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
-  ApiV1CategoriesRoute: typeof ApiV1CategoriesRoute
-  ApiV1FavoritesRoute: typeof ApiV1FavoritesRouteWithChildren
-  ApiV1OffersRoute: typeof ApiV1OffersRouteWithChildren
-  ApiV1SearchRoute: typeof ApiV1SearchRoute
   CatalogProductOfferRoute: typeof CatalogProductOfferRoute
   ApiPaymentsCryptoIpnRoute: typeof ApiPaymentsCryptoIpnRoute
-  ApiV1AuthLoginRoute: typeof ApiV1AuthLoginRoute
-  ApiV1AuthMeRoute: typeof ApiV1AuthMeRoute
-  ApiV1SellersIdRoute: typeof ApiV1SellersIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -445,18 +436,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -487,6 +478,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cabinet': {
+      id: '/_authenticated/cabinet'
+      path: '/cabinet'
+      fullPath: '/cabinet'
+      preLoaderRoute: typeof AuthenticatedCabinetRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/favorites': {
       id: '/_authenticated/favorites'
       path: '/favorites'
@@ -494,33 +506,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFavoritesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/payments': {
-      id: '/admin/payments'
-      path: '/payments'
-      fullPath: '/admin/payments'
-      preLoaderRoute: typeof AdminPaymentsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
+    '/api/uploads': {
+      id: '/api/uploads'
+      path: '/api/uploads'
+      fullPath: '/api/uploads'
+      preLoaderRoute: typeof ApiUploadsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/catalog/$categorySlug': {
       id: '/catalog/$categorySlug'
@@ -529,12 +520,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogCategorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pages/$slug': {
+      id: '/pages/$slug'
+      path: '/pages/$slug'
+      fullPath: '/pages/$slug'
+      preLoaderRoute: typeof PagesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/seller/$id': {
       id: '/seller/$id'
       path: '/seller/$id'
       fullPath: '/seller/$id'
       preLoaderRoute: typeof SellerIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/$section': {
+      id: '/_authenticated/admin/$section'
+      path: '/$section'
+      fullPath: '/admin/$section'
+      preLoaderRoute: typeof AuthenticatedAdminSectionRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/cabinet/': {
+      id: '/_authenticated/cabinet/'
+      path: '/'
+      fullPath: '/cabinet/'
+      preLoaderRoute: typeof AuthenticatedCabinetIndexRouteImport
+      parentRoute: typeof AuthenticatedCabinetRouteRoute
+    }
+    '/_authenticated/cabinet/orders': {
+      id: '/_authenticated/cabinet/orders'
+      path: '/orders'
+      fullPath: '/cabinet/orders'
+      preLoaderRoute: typeof AuthenticatedCabinetOrdersRouteImport
+      parentRoute: typeof AuthenticatedCabinetRouteRoute
+    }
+    '/_authenticated/cabinet/payouts': {
+      id: '/_authenticated/cabinet/payouts'
+      path: '/payouts'
+      fullPath: '/cabinet/payouts'
+      preLoaderRoute: typeof AuthenticatedCabinetPayoutsRouteImport
+      parentRoute: typeof AuthenticatedCabinetRouteRoute
+    }
+    '/_authenticated/cabinet/reviews': {
+      id: '/_authenticated/cabinet/reviews'
+      path: '/reviews'
+      fullPath: '/cabinet/reviews'
+      preLoaderRoute: typeof AuthenticatedCabinetReviewsRouteImport
+      parentRoute: typeof AuthenticatedCabinetRouteRoute
     }
     '/_authenticated/checkout/return': {
       id: '/_authenticated/checkout/return'
@@ -557,53 +597,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/admin/orders/': {
-      id: '/admin/orders/'
-      path: '/orders'
-      fullPath: '/admin/orders/'
-      preLoaderRoute: typeof AdminOrdersIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/orders/$id': {
-      id: '/admin/orders/$id'
-      path: '/orders/$id'
-      fullPath: '/admin/orders/$id'
-      preLoaderRoute: typeof AdminOrdersIdRouteImport
-      parentRoute: typeof AdminRoute
+    '/api/files/$': {
+      id: '/api/files/$'
+      path: '/api/files/$'
+      fullPath: '/api/files/$'
+      preLoaderRoute: typeof ApiFilesSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/stripe/webhook': {
       id: '/api/stripe/webhook'
       path: '/api/stripe/webhook'
       fullPath: '/api/stripe/webhook'
       preLoaderRoute: typeof ApiStripeWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/categories': {
-      id: '/api/v1/categories'
-      path: '/api/v1/categories'
-      fullPath: '/api/v1/categories'
-      preLoaderRoute: typeof ApiV1CategoriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/favorites': {
-      id: '/api/v1/favorites'
-      path: '/api/v1/favorites'
-      fullPath: '/api/v1/favorites'
-      preLoaderRoute: typeof ApiV1FavoritesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/offers': {
-      id: '/api/v1/offers'
-      path: '/api/v1/offers'
-      fullPath: '/api/v1/offers'
-      preLoaderRoute: typeof ApiV1OffersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/search': {
-      id: '/api/v1/search'
-      path: '/api/v1/search'
-      fullPath: '/api/v1/search'
-      preLoaderRoute: typeof ApiV1SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog/product/$offer': {
@@ -613,6 +618,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogProductOfferRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/cabinet/offers/': {
+      id: '/_authenticated/cabinet/offers/'
+      path: '/offers'
+      fullPath: '/cabinet/offers/'
+      preLoaderRoute: typeof AuthenticatedCabinetOffersIndexRouteImport
+      parentRoute: typeof AuthenticatedCabinetRouteRoute
+    }
+    '/_authenticated/cabinet/offers/$id': {
+      id: '/_authenticated/cabinet/offers/$id'
+      path: '/offers/$id'
+      fullPath: '/cabinet/offers/$id'
+      preLoaderRoute: typeof AuthenticatedCabinetOffersIdRouteImport
+      parentRoute: typeof AuthenticatedCabinetRouteRoute
+    }
     '/api/payments/crypto/ipn': {
       id: '/api/payments/crypto/ipn'
       path: '/api/payments/crypto/ipn'
@@ -620,45 +639,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPaymentsCryptoIpnRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/v1/auth/login': {
-      id: '/api/v1/auth/login'
-      path: '/api/v1/auth/login'
-      fullPath: '/api/v1/auth/login'
-      preLoaderRoute: typeof ApiV1AuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/auth/me': {
-      id: '/api/v1/auth/me'
-      path: '/api/v1/auth/me'
-      fullPath: '/api/v1/auth/me'
-      preLoaderRoute: typeof ApiV1AuthMeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/v1/favorites/$offerId': {
-      id: '/api/v1/favorites/$offerId'
-      path: '/$offerId'
-      fullPath: '/api/v1/favorites/$offerId'
-      preLoaderRoute: typeof ApiV1FavoritesOfferIdRouteImport
-      parentRoute: typeof ApiV1FavoritesRoute
-    }
-    '/api/v1/offers/$id': {
-      id: '/api/v1/offers/$id'
-      path: '/$id'
-      fullPath: '/api/v1/offers/$id'
-      preLoaderRoute: typeof ApiV1OffersIdRouteImport
-      parentRoute: typeof ApiV1OffersRoute
-    }
-    '/api/v1/sellers/$id': {
-      id: '/api/v1/sellers/$id'
-      path: '/api/v1/sellers/$id'
-      fullPath: '/api/v1/sellers/$id'
-      preLoaderRoute: typeof ApiV1SellersIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminSectionRoute: typeof AuthenticatedAdminSectionRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminSectionRoute: AuthenticatedAdminSectionRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
+interface AuthenticatedCabinetRouteRouteChildren {
+  AuthenticatedCabinetOrdersRoute: typeof AuthenticatedCabinetOrdersRoute
+  AuthenticatedCabinetPayoutsRoute: typeof AuthenticatedCabinetPayoutsRoute
+  AuthenticatedCabinetReviewsRoute: typeof AuthenticatedCabinetReviewsRoute
+  AuthenticatedCabinetIndexRoute: typeof AuthenticatedCabinetIndexRoute
+  AuthenticatedCabinetOffersIdRoute: typeof AuthenticatedCabinetOffersIdRoute
+  AuthenticatedCabinetOffersIndexRoute: typeof AuthenticatedCabinetOffersIndexRoute
+}
+
+const AuthenticatedCabinetRouteRouteChildren: AuthenticatedCabinetRouteRouteChildren =
+  {
+    AuthenticatedCabinetOrdersRoute: AuthenticatedCabinetOrdersRoute,
+    AuthenticatedCabinetPayoutsRoute: AuthenticatedCabinetPayoutsRoute,
+    AuthenticatedCabinetReviewsRoute: AuthenticatedCabinetReviewsRoute,
+    AuthenticatedCabinetIndexRoute: AuthenticatedCabinetIndexRoute,
+    AuthenticatedCabinetOffersIdRoute: AuthenticatedCabinetOffersIdRoute,
+    AuthenticatedCabinetOffersIndexRoute: AuthenticatedCabinetOffersIndexRoute,
+  }
+
+const AuthenticatedCabinetRouteRouteWithChildren =
+  AuthenticatedCabinetRouteRoute._addFileChildren(
+    AuthenticatedCabinetRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedCabinetRouteRoute: typeof AuthenticatedCabinetRouteRouteWithChildren
   AuthenticatedFavoritesRoute: typeof AuthenticatedFavoritesRoute
   AuthenticatedCheckoutReturnRoute: typeof AuthenticatedCheckoutReturnRoute
   AuthenticatedOrdersIdRoute: typeof AuthenticatedOrdersIdRoute
@@ -666,6 +692,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedCabinetRouteRoute: AuthenticatedCabinetRouteRouteWithChildren,
   AuthenticatedFavoritesRoute: AuthenticatedFavoritesRoute,
   AuthenticatedCheckoutReturnRoute: AuthenticatedCheckoutReturnRoute,
   AuthenticatedOrdersIdRoute: AuthenticatedOrdersIdRoute,
@@ -675,71 +703,24 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface AdminRouteChildren {
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminPaymentsRoute: typeof AdminPaymentsRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
-  AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminLoginRoute: AdminLoginRoute,
-  AdminPaymentsRoute: AdminPaymentsRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminOrdersIdRoute: AdminOrdersIdRoute,
-  AdminOrdersIndexRoute: AdminOrdersIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface ApiV1FavoritesRouteChildren {
-  ApiV1FavoritesOfferIdRoute: typeof ApiV1FavoritesOfferIdRoute
-}
-
-const ApiV1FavoritesRouteChildren: ApiV1FavoritesRouteChildren = {
-  ApiV1FavoritesOfferIdRoute: ApiV1FavoritesOfferIdRoute,
-}
-
-const ApiV1FavoritesRouteWithChildren = ApiV1FavoritesRoute._addFileChildren(
-  ApiV1FavoritesRouteChildren,
-)
-
-interface ApiV1OffersRouteChildren {
-  ApiV1OffersIdRoute: typeof ApiV1OffersIdRoute
-}
-
-const ApiV1OffersRouteChildren: ApiV1OffersRouteChildren = {
-  ApiV1OffersIdRoute: ApiV1OffersIdRoute,
-}
-
-const ApiV1OffersRouteWithChildren = ApiV1OffersRoute._addFileChildren(
-  ApiV1OffersRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  ContactRoute: ContactRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SearchRoute: SearchRoute,
   SellRoute: SellRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
+  ApiUploadsRoute: ApiUploadsRoute,
   CatalogCategorySlugRoute: CatalogCategorySlugRoute,
+  PagesSlugRoute: PagesSlugRoute,
   SellerIdRoute: SellerIdRoute,
+  ApiFilesSplatRoute: ApiFilesSplatRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
-  ApiV1CategoriesRoute: ApiV1CategoriesRoute,
-  ApiV1FavoritesRoute: ApiV1FavoritesRouteWithChildren,
-  ApiV1OffersRoute: ApiV1OffersRouteWithChildren,
-  ApiV1SearchRoute: ApiV1SearchRoute,
   CatalogProductOfferRoute: CatalogProductOfferRoute,
   ApiPaymentsCryptoIpnRoute: ApiPaymentsCryptoIpnRoute,
-  ApiV1AuthLoginRoute: ApiV1AuthLoginRoute,
-  ApiV1AuthMeRoute: ApiV1AuthMeRoute,
-  ApiV1SellersIdRoute: ApiV1SellersIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

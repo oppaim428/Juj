@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { confirmCheckoutFn } from "@/lib/orders.functions";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n";
 
 export const Route = createFileRoute("/_authenticated/checkout/return")({
   validateSearch: z.object({ order: z.coerce.number().int().positive().catch(0) }),
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/checkout/return")({
 function Page() {
   const { order } = Route.useSearch();
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [waiting, setWaiting] = useState(true);
 
   useEffect(() => {
@@ -40,14 +42,14 @@ function Page() {
       {waiting ? (
         <>
           <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary" />
-          <h1 className="mt-4 text-2xl font-bold">Confirming your payment…</h1>
-          <p className="mt-2 text-sm text-muted-foreground">This usually takes a few seconds. Crypto payments can take longer.</p>
+          <h1 className="mt-4 text-2xl font-bold">{t("Confirming your payment…")}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t("This usually takes a few seconds. Crypto payments can take longer.")}</p>
         </>
       ) : (
         <>
-          <h1 className="text-2xl font-bold">We're still waiting for the payment</h1>
-          <p className="mt-2 text-sm text-muted-foreground">You can check the order page later — it updates on its own.</p>
-          <Button asChild className="mt-6" data-testid="checkout-open-order"><Link to="/orders/$id" params={{ id: String(order) }}>Open order</Link></Button>
+          <h1 className="text-2xl font-bold">{t("We're still waiting for the payment")}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t("You can check the order page later — it updates on its own.")}</p>
+          <Button asChild className="mt-6"><Link to="/orders/$id" params={{ id: String(order) }}>{t("Open order")}</Link></Button>
         </>
       )}
     </div>

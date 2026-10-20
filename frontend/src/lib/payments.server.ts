@@ -1,9 +1,9 @@
 import Stripe from "stripe";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { appUrl } from "./email.server";
 import type { Provider } from "./settings.server";
 
-// Ported from Juj: Stripe, PayPal, Razorpay and NOWPayments (crypto) checkout handlers.
-type CheckoutOrder = { id: number; email: string; title: string; unit: number; quantity: number; total: number; currency: string; origin: string };
+type CheckoutOrder = { id: number; title: string; unit: number; quantity: number; total: number; currency: string };
 export type PayState = "paid" | "pending" | "failed";
 
 const env = (k: string) => process.env[k] ?? "";
@@ -21,8 +21,8 @@ export function configuredProviders(): Record<Provider, boolean> {
   };
 }
 
-const returnUrl = (o: CheckoutOrder, provider: Provider) => `${o.origin}/checkout/return?order=${o.id}&provider=${provider}`;
-const cancelUrl = (o: CheckoutOrder) => `${o.origin}/orders/${o.id}?cancelled=1`;
+const returnUrl = (o: CheckoutOrder, provider: Provider) => `${appUrl()}/checkout/return?order=${o.id}&provider=${provider}`;
+const cancelUrl = (o: CheckoutOrder) => `${appUrl()}/orders/${o.id}?cancelled=1`;
 
 async function paypalToken() {
   const r = await fetch(`${paypalBase()}/v1/oauth2/token`, {
@@ -47,7 +47,6 @@ async function stripeSession(o: CheckoutOrder) {
     success_url: `${returnUrl(o, "stripe")}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: cancelUrl(o),
     client_reference_id: String(o.id),
-    ...(o.email ? { customer_email: o.email } : {}),
     metadata: { order_id: String(o.id) },
   };
   const attempts: Record<string, unknown>[] = [
@@ -107,7 +106,7 @@ export async function createCheckout(provider: Provider, o: CheckoutOrder): Prom
     headers: { "x-api-key": env("NOWPAYMENTS_API_KEY"), "content-type": "application/json" },
     body: JSON.stringify({
       price_amount: Number(amount), price_currency: o.currency.toLowerCase(), order_id: String(o.id),
-      order_description: o.title.slice(0, 200), ipn_callback_url: `${o.origin}/api/payments/crypto/ipn`,
+      order_description: o.title.slice(0, 200), ipn_callback_url: `${appUrl()}/api/payments/crypto/ipn`,
       success_url: returnUrl(o, "crypto"), cancel_url: cancelUrl(o),
     }),
   });

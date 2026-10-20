@@ -5,19 +5,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/i18n";
 
 type Props = {
   children: ReactNode;
   question: string;
   onConfirm: (note: string) => unknown;
   testId: string;
-  withNote?: string;
+  withNote?: boolean;
   variant?: "outline" | "ghost" | "default" | "destructive";
   className?: string;
   disabled?: boolean;
 };
 
-export function ConfirmButton({ children, question, onConfirm, testId, withNote, variant = "outline", className, disabled }: Props) {
+export function ConfirmButton({ children, question, onConfirm, testId, withNote, variant = "ghost", className, disabled }: Props) {
+  const { t } = useI18n();
   const [note, setNote] = useState("");
   return (
     <AlertDialog onOpenChange={(o) => o && setNote("")}>
@@ -27,12 +29,12 @@ export function ConfirmButton({ children, question, onConfirm, testId, withNote,
       <AlertDialogContent data-testid={`${testId}-dialog`}>
         <AlertDialogHeader>
           <AlertDialogTitle>{question}</AlertDialogTitle>
-          <AlertDialogDescription>Please confirm to continue.</AlertDialogDescription>
+          <AlertDialogDescription>{t("Please confirm to continue.")}</AlertDialogDescription>
         </AlertDialogHeader>
-        {withNote && <Input placeholder={withNote} value={note} onChange={(e) => setNote(e.target.value)} data-testid={`${testId}-note`} />}
+        {withNote && <Input placeholder={t("Reason")} value={note} onChange={(e) => setNote(e.target.value)} data-testid={`${testId}-note`} />}
         <AlertDialogFooter>
-          <AlertDialogCancel data-testid={`${testId}-cancel`}>Cancel</AlertDialogCancel>
-          <AlertDialogAction data-testid={`${testId}-confirm`} onClick={() => onConfirm(note)}>Confirm</AlertDialogAction>
+          <AlertDialogCancel data-testid={`${testId}-cancel`}>{t("Cancel")}</AlertDialogCancel>
+          <AlertDialogAction data-testid={`${testId}-confirm`} onClick={() => onConfirm(note)}>{t("Confirm")}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
