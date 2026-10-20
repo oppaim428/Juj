@@ -1,0 +1,33 @@
+{
+  "summary": "Retest of the iteration 1 fixes. All 4 requested flows pass. (1) Buyer buyer1 logged in, opened /catalog/product/4, clicked Buy now and paid with 4242 on Stripe. Stripe prefilled the email (buyer1@juj.test, read-only contact field) and redirected to the PUBLIC host /checkout/return?order=7&provider=stripe&session_id=..., which then went to /orders/7 showing Paid. No 403. (2) Admin refund on order #7: the order shows Refunded, the Payment attempts row shows Refunded, /admin/payments shows Refunded, and the timeline says 'The order was refunded to the buyer.' (real Stripe refund). (3) With Stripe disabled in /admin/settings, the product page Card button reads 'UNAVAILABLE' and is disabled; unconfigured providers still read 'NOT SET UP'. Stripe was re-enabled through the UI ('Settings saved'). (4) Lockout: nobody@juj.test got 'Wrong email or password.' 5 times, then 'Too many attempts. Try again in 15 minutes.' on the 6th try. The real admin could still log in right after. Backend pytest: 9/9 pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "admin-auth.server.ts loginAdmin", "issue": "Lockout is now keyed by email only. Anyone who knows admin@juj.test can lock the real admin out for 15 minutes by sending 5 wrong passwords (a DoS trade-off). Consider email+trusted-IP, or a CAPTCHA/backoff instead of a hard lock."},
+      {"endpoint": "refundOrder", "issue": "Legacy data: order #3, refunded before the fix, still has its tx row as 'paid'. New refunds are correct. Optional one-off data fix."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Product page", "issues": ["On first hard load the payment picker can take a few seconds to show; one attempt timed out at 20s on the preview ingress. A reload worked. Likely the preview dev-server, as in iteration 1."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_api_proxy_payments.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: rethink email-only lockout (DoS on the known admin email).",
+    "Optional: backfill the payment_status of legacy refunded order #3's tx to 'refunded'."
+  ],
+  "critical_code_review_comments": [
+    "orders.functions.ts origin() now uses process.env.PUBLIC_APP_URL (non-null assertion). Correct for preview, but set PUBLIC_APP_URL in production too or checkout will build 'undefined/...' URLs.",
+    "refundOrder sets the order to refunded before calling the provider. If the provider call fails, the tx stays 'paid' and only a message tells the admin to refund manually. Acceptable."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (9/9 pytest)", "frontend": "100% (4/4 requested flows)"},
+  "test_credentials": "From /app/memory/test_credentials.md: admin admin@juj.test / JujAdmin2026!, buyer buyer1@juj.test / JujDemo2026!",
+  "seed_data_creation": "New order #7 (buyer1, Stripe paid, then admin-refunded via real Stripe refund). Settings restored: all payment methods true. admin_login_attempts collection cleared.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Stripe Checkout now shows a read-only email (no #email input). Card flow: click [data-testid=card-accordion-item-button] via JS, fill #cardNumber/#cardExpiry/#cardCvc/#billingName, select #billingCountry US, fill address + Escape, select #billingAdministrativeArea CA, uncheck #enableStripePass via JS, submit via JS. Settings switches are Radix (data-state=checked). ConfirmButton confirm id = <testId>-confirm. Run pytest with REACT_APP_BACKEND_URL exported (the env var is not set in the shell by default)."
+}
