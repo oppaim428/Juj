@@ -74,7 +74,7 @@ export function PaymentMethods({ methods, provider, setProvider }: Props) {
               <M.icon className="h-4 w-4 shrink-0" />
               <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2">
                 <span className="truncate">{M.label}</span>
-                {!m.available && <span className="text-[10px] uppercase leading-tight text-muted-foreground">Not set up</span>}
+                {!m.available && <span className="text-[10px] uppercase leading-tight text-muted-foreground">{m.configured ? "Unavailable" : "Not set up"}</span>}
               </span>
             </button>
           );

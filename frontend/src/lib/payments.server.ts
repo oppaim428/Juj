@@ -3,7 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import type { Provider } from "./settings.server";
 
 // Ported from Juj: Stripe, PayPal, Razorpay and NOWPayments (crypto) checkout handlers.
-type CheckoutOrder = { id: number; title: string; unit: number; quantity: number; total: number; currency: string; origin: string };
+type CheckoutOrder = { id: number; email: string; title: string; unit: number; quantity: number; total: number; currency: string; origin: string };
 export type PayState = "paid" | "pending" | "failed";
 
 const env = (k: string) => process.env[k] ?? "";
@@ -47,6 +47,7 @@ async function stripeSession(o: CheckoutOrder) {
     success_url: `${returnUrl(o, "stripe")}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: cancelUrl(o),
     client_reference_id: String(o.id),
+    ...(o.email ? { customer_email: o.email } : {}),
     metadata: { order_id: String(o.id) },
   };
   const attempts: Record<string, unknown>[] = [

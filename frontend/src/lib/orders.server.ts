@@ -15,7 +15,7 @@ export type OrderDoc = {
 };
 export type TxDoc = {
   _id: number; order_id: number; provider: Provider; external_id: string; amount_minor: number; currency: string;
-  status: "initiated" | "completed" | "failed" | "pending"; payment_status: PayState; created_at: Date; updated_at: Date;
+  status: "initiated" | "completed" | "failed" | "pending" | "refunded"; payment_status: PayState | "refunded"; created_at: Date; updated_at: Date;
 };
 export type MsgDoc = { order_id: number; sender: "buyer" | "admin" | "system"; kind: "message" | "delivery" | "system"; body: string; created_at: Date };
 
@@ -32,7 +32,7 @@ export const toOrder = ({ _id, ...o }: OrderDoc) => ({ id: _id, ...o });
 
 async function startPayment(o: OrderDoc, origin: string) {
   const { url, externalId } = await createCheckout(o.payment_provider, {
-    id: o._id, title: o.offer_title + (o.option_label ? ` — ${o.option_label}` : ""),
+    id: o._id, email: o.buyer_email, title: o.offer_title + (o.option_label ? ` — ${o.option_label}` : ""),
     unit: o.unit_price_minor, quantity: o.quantity, total: o.total_minor, currency: o.currency, origin,
   });
   const now = new Date();
@@ -46,7 +46,7 @@ async function startPayment(o: OrderDoc, origin: string) {
 
 export async function availableMethods() {
   const [settings, configured] = [await getSettings(), configuredProviders()];
-  return (Object.keys(configured) as Provider[]).map((id) => ({ id, available: settings.payment_methods[id] && configured[id] }));
+  return (Object.keys(configured) as Provider[]).map((id) => ({ id, configured: configured[id], available: settings.payment_methods[id] && configured[id] }));
 }
 
 export async function createOrder(buyer: Buyer, raw: CheckoutInput, origin: string) {
@@ -124,7 +124,7 @@ export async function confirmPayment(orderId: number): Promise<OrderStatus | nul
   if (!t) return o.status;
   let state: PayState = "pending";
   try {
-    state = await checkPayment(o.payment_provider, t.external_id, t.payment_status);
+    state = await checkPayment(o.payment_provider, t.external_id, String(t.payment_status));
   } catch (e) {
     console.error("[payment:check]", e);
   }
@@ -156,6 +156,7 @@ export async function refundOrder(orderId: number) {
   if (r.modifiedCount !== 1) return false;
   const o = (await (await orders()).findOne({ _id: orderId }))!;
   const auto = o.payment_ref ? await refundPayment(o.payment_provider, o.payment_ref) : false;
+  if (auto) await (await transactions()).updateOne({ order_id: orderId, external_id: o.payment_ref! }, { $set: { status: "refunded", payment_status: "refunded", updated_at: new Date() } });
   await sysMsg(orderId, auto ? "The order was refunded to the buyer." : "The order was refunded. The admin sends the money back through the payment provider.");
   return true;
 }

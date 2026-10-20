@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { checkoutSchema, type CheckoutInput } from "./checkout.schemas";
@@ -8,10 +7,7 @@ import * as orders from "./orders.server";
 const idOnly = z.object({ orderId: z.number().int().positive() });
 type Ctx = { userId: string; claims: { email?: string } };
 const buyerOf = (c: Ctx): orders.Buyer => ({ id: c.userId, email: String(c.claims.email ?? "") });
-const origin = () => {
-  const h = getRequest().headers;
-  return h.get("origin") ?? `https://${h.get("x-forwarded-host") ?? h.get("host")}`;
-};
+const origin = () => process.env["PUBLIC_APP_URL"]!;
 
 export const fetchPaymentMethods = createServerFn({ method: "GET" }).handler(() => orders.availableMethods());
 

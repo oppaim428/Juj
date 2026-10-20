@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { randomUUID } from "node:crypto";
-import { deleteCookie, getCookie, getRequest, setCookie } from "@tanstack/react-start/server";
+import { deleteCookie, getCookie, setCookie } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { db } from "./db.server";
 
@@ -39,16 +39,11 @@ export function ensureAdmin() {
   return seeded;
 }
 
-function clientIp() {
-  const h = getRequest().headers;
-  return h.get("cf-connecting-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-}
-
 export async function loginAdmin(raw: unknown): Promise<{ ok: true } | { ok: false; error: string }> {
   const p = loginSchema.safeParse(raw);
   if (!p.success) return { ok: false, error: "Enter a valid email and password." };
   await ensureAdmin();
-  const identifier = `${clientIp()}:${p.data.email}`;
+  const identifier = p.data.email;
   const att = await attempts();
   const fails = await att.countDocuments({ identifier, created_at: { $gte: new Date(Date.now() - WINDOW_MS) } });
   if (fails >= MAX_FAILS) return { ok: false, error: "Too many attempts. Try again in 15 minutes." };

@@ -1,0 +1,45 @@
+{
+  "summary": "E2E test of the Juj admin/orders/payments integration into find-my-digital-gems. The storefront (home, product /catalog/product/4) is unchanged. Payment picker and buyer/admin flows work: Stripe checkout session creation, signed webhook marking orders paid, /checkout/return polling, buyer orders list/detail/confirm received, admin login/lockout/dashboard/orders search+filter/deliver/release/refund (real Stripe refund)/cancel, payments filter, settings toggle, logout. One CRITICAL bug: Stripe success_url/cancel_url point to the internal host https://digital-gems-admin.cluster-12.preview.emergentcf.cloud, which returns 403 Forbidden. Buyers never land on /checkout/return after paying. I only got past it by opening the public /checkout/return URL by hand.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "checkoutFn / retryPaymentFn (orders.functions.ts origin())", "issue": "origin() builds the Stripe success/cancel URLs (and NOWPayments ipn_callback_url) from the request 'origin' / 'x-forwarded-host' headers. Behind the preview ingress these resolve to digital-gems-admin.cluster-12.preview.emergentcf.cloud, so after paying, Stripe redirects to that host and gets 403 Forbidden. Payment is still recorded via webhook, but the buyer sees a 403 page.", "priority": "CRITICAL"}
+    ],
+    "minor": [
+      {"endpoint": "refundOrder (orders.server.ts)", "issue": "After a refund the payment_transactions row stays payment_status 'paid' and shows 'Paid' under Payment attempts and on /admin/payments. Consider marking it 'refunded'."},
+      {"endpoint": "refundOrder", "issue": "Order is set to 'refunded' before the Stripe refund call. If Stripe fails, the order is still 'refunded' and only a message says to refund manually. Acceptable, but log/flag it for the admin."},
+      {"endpoint": "admin-auth.server.ts clientIp()", "issue": "Lockout identifier uses the first X-Forwarded-For entry, which the client controls. Spoofing that header bypasses the 5-attempt lockout."},
+      {"endpoint": "resolveOrderFn / saveSettingsFn", "issue": "inputValidator is a pass-through. Zod validation happens later in admin-panel.server, after requireAdmin. Fine functionally, but invalid input throws a 500 instead of a clean 400."},
+      {"endpoint": "stripeSession", "issue": "customer_email is not passed to Stripe Checkout, so the buyer must re-type their email."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "PaymentMethods (CheckoutPayment.tsx)", "issue": "When the admin disables Stripe (keys configured), the button says 'NOT SET UP'. Admin-disabled and unconfigured look the same; consider 'Unavailable'.", "selector": "[data-testid=payment-method-stripe]", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Stripe checkout return", "issue": "Stripe redirects to the cluster-12 internal host (403) instead of the public preview URL. /checkout/return works when opened on the public host: it polled and redirected to /orders/<id> with status Paid.", "affected_selectors": ["[data-testid=checkout-return]"]}
+    ],
+    "design_issues": [
+      {"screen": "Auth page /auth (base UI)", "issues": ["No data-testids on login inputs/button; the Log in button has no explicit type=submit (not changed, base UI)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_api_proxy_payments.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "CRITICAL: Stop deriving the checkout origin from request headers. Add a public URL env var (e.g. PUBLIC_APP_URL=https://digital-gems-admin.preview.emergentagent.com, same as REACT_APP_BACKEND_URL) to frontend/.env and use it in orders.functions.ts origin() for the Stripe success/cancel URLs and the NOWPayments IPN callback. Restart frontend after the .env change.",
+    "Mark the payment transaction as refunded after a successful refund so the admin Payments page reflects it.",
+    "Optional: pass customer_email to the Stripe session; show 'Unavailable' rather than 'Not set up' when a configured provider is admin-disabled; use a trusted client-IP source for the admin lockout."
+  ],
+  "critical_code_review_comments": [
+    "orders.functions.ts origin(): header-derived origin is wrong behind the ingress and can be spoofed by a client (Origin header). Use a config value.",
+    "admin-auth.server.ts: bcrypt $2b$ hash OK, httpOnly+secure cookie OK, the admin seed updates the password if it changed, 5-fail lockout works. X-Forwarded-For is trusted blindly.",
+    "Preview env: the Vite dev server serves many unbundled modules, and the preview ingress sometimes returns HTTP 429 on them. Hard page loads then render blank (hydration fails). Seen on /orders and /admin during rapid navigation. Environment-related, not app logic, but it makes the preview flaky."
+  ],
+  "updated_files": ["/app/backend/tests/test_api_proxy_payments.py"],
+  "success_rate": {"backend": "100% (9/9 pytest)", "frontend": "~92% (all flows pass except the Stripe return redirect host)"},
+  "test_credentials": "/app/memory/test_credentials.md is EMPTY (only the header). Credentials used from the review request: admin admin@juj.test / JujAdmin2026!, buyer buyer1@juj.test / JujDemo2026!. Main agent should write them to the file.",
+  "seed_data_creation": "Created orders #1-#6 for buyer1 in MongoDB test_database: #1 cancelled (admin cancel), #2 and #4 pending_payment, #3 refunded (Stripe refund issued), #5 completed (admin deliver + release), #6 completed (buyer confirm received). Settings: Stripe toggled off and back on (restored to all true). Lockout test attempt records deleted.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Stripe Checkout uses managed payments/Link UI. To pay: fill #email, click [data-testid=card-accordion-item-button] via JS, fill #cardNumber/#cardExpiry/#cardCvc/#billingName, select #billingCountry US, fill address (press Escape to close Google suggestions), select #billingAdministrativeArea CA, uncheck #enableStripePass via JS if checked (otherwise a phone number is required), then submit [data-testid=hosted-payment-submit-button] via JS. Auth page: use form.get_by_role('button', name='Log in'). The webhook is reachable (signed events return 200). Retest: after the origin fix, the Stripe redirect should land on the public /checkout/return and then /orders/<id> as Paid. Space out page loads to avoid ingress 429s.",
+  "rca of the issue": "Repro: log in as buyer1, open /catalog/product/4, click Buy now, pay with 4242 card. Stripe redirects to https://digital-gems-admin.cluster-12.preview.emergentcf.cloud/checkout/return?order=N&provider=stripe&session_id=... and gets 403 Forbidden. Root cause: orders.functions.ts origin() returns h.get('origin') ?? https://${x-forwarded-host ?? host}. The preview edge (emergentcf.cloud) forwards the internal cluster hostname, which payments.server.ts uses for success_url/cancel_url. Mitigation: read the public base URL from an env var. The order still becomes paid via webhook, and /checkout/return works on the public host."
+}
